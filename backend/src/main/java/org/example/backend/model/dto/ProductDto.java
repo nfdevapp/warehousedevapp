@@ -1,11 +1,25 @@
 package org.example.backend.model.dto;
 
+import lombok.Builder;
+import lombok.With;
 import org.example.backend.utils.enums.Category;
 
+@With
+@Builder
 public record ProductDto(String name,
                          String barcode,
                          String description,
                          int quantity,
-                         Category category,
-                         int warehouseId) {
+                         String customerName,
+                         String customerCity,
+                         String customerStreet,
+                         String customerHouseNumber,
+                         String customerZipCode,
+                         String supplierName,
+                         String supplierCity,
+                         String supplierStreet,
+                         String supplierHouseNumber,
+                         String supplierZipCode,
+                         String warehouseId
+                         ) {
 }

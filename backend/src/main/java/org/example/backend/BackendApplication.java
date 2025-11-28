@@ -1,5 +1,6 @@
 package org.example.backend;
 
+import org.example.backend.utils.GenerateTestData;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 

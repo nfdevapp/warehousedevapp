@@ -21,13 +21,17 @@ public class ProductController {
     public List<Product> getAllProductsById(@PathVariable String warehouseId) {
         return  productService.getAllProductsById(warehouseId);
     }
+    @PostMapping
+    public Product createProduct(@RequestBody ProductDto product) {
+        return productService.createProduct(product);
+    }
     @GetMapping("/{id}")
-    public Product getPoductById(@PathVariable String id) {
+    public ProductDto getPoductById(@PathVariable String id) {
         return productService.getProductById(id);
     }
 
     @PutMapping("/{id}")
-    public Product updateProduct(@PathVariable String id, @RequestBody Product product) {
+    public ProductDto updateProduct(@PathVariable String id, @RequestBody ProductDto product) {
         return  productService.updateProduct(id, product);
     }
     @DeleteMapping("/{id}")
