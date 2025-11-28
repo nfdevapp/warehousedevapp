@@ -1,26 +1,28 @@
-import { Route, Routes } from "react-router-dom";
-import Layout from "./components/Layout.tsx";
-import WarehousePage from "./pages/WarehousePage.tsx";
-import ProductPage from "./pages/ProductPage.tsx";
-// import ProductDetailPage from "./pages/ProductDetailPage.tsx";
+import { Routes, Route } from "react-router-dom";
+import Layout from "./components/Layout";
 
-import './App.css';
+import WarehousePage from "./pages/WarehousePage";
+import WarehouseDetailPage from "./pages/WarehouseDetailPage";
+import ProductPage from "./pages/ProductPage";
+import ProductDetailPage from "./pages/ProductDetailPage";
+import SupplierPage from "./pages/SupplierPage";
+import CustomerPage from "./pages/CustomerPage";
 
-function App() {
+export default function App() {
     return (
-        <Layout>
-            <Routes>
-                {/* Liste aller Lagerhäuser */}
+        <Routes>
+            <Route element={<Layout />}>
+                {/* Hauptseiten */}
                 <Route path="/" element={<WarehousePage />} />
+                <Route path="/product" element={<ProductPage />} />
+                <Route path="/supplier" element={<SupplierPage />} />
+                <Route path="/customer" element={<CustomerPage />} />
 
-                {/* Produkte eines bestimmten Lagerhauses */}
-                <Route path="/warehouse/:warehouseId/products" element={<ProductPage />} />
-
-                {/* Produktdetails */}
-                {/*<Route path="/productdetails/:id" element={<ProductDetailPage />} />*/}
-            </Routes>
-        </Layout>
+                {/* Detailseiten */}
+                <Route path="/warehouse/:id" element={<WarehouseDetailPage />} />
+                <Route path="/product/:id" element={<ProductDetailPage />} />
+                <Route path="/product/warehouse/:id" element={<ProductPage />} />
+            </Route>
+        </Routes>
     );
 }
-
-export default App;

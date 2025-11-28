@@ -61,11 +61,12 @@ public class ProductService {
     }
 
     public ProductDto getProductById(String id) {
-        Product product = getproduct(id);
-        Customer customer = getcustomer(product.customerId());
-        Supplier supplier = getsupplier(product.supplierId());
+        Product product = getProduct(id);
+        Customer customer = getCustomer(product.customerId());
+        Supplier supplier = getSupplier(product.supplierId());
 
         return new ProductDto(
+                product.id(),
                 product.name(),
                 product.barcode(),
                 product.description(),
@@ -87,9 +88,9 @@ public class ProductService {
     }
 
     public ProductDto updateProduct(String id, ProductDto dto) {
-        Product oldProduct = getproduct(id);
-        Customer oldCustomer = getcustomer(oldProduct.customerId());
-        Supplier oldSupplier = getsupplier(oldProduct.supplierId());
+        Product oldProduct = getProduct(id);
+        Customer oldCustomer = getCustomer(oldProduct.customerId());
+        Supplier oldSupplier = getSupplier(oldProduct.supplierId());
 
         Product updatedProduct = oldProduct
                 .withName(dto.name())
@@ -120,25 +121,25 @@ public class ProductService {
 
 
     public void deleteProduct(String id) {
-        Product product = getproduct(id);
-        Customer customer = getcustomer(product.customerId());
-        Supplier supplier = getsupplier(product.supplierId());
+        Product product = getProduct(id);
+        Customer customer = getCustomer(product.customerId());
+        Supplier supplier = getSupplier(product.supplierId());
         customerRepo.delete(customer);
         supplierRepo.delete(supplier);
         productRepo.deleteById(id);
     }
 
-    private Product getproduct(String id) {
+    private Product getProduct(String id) {
         return productRepo.findById(id)
                 .orElseThrow(() -> new WarehouseAppException("Product not found: " + id));
     }
 
-    private Customer getcustomer(String id) {
+    private Customer getCustomer(String id) {
         return customerRepo.findById(id)
                 .orElseThrow(() -> new WarehouseAppException("Customer not found: " + id));
     }
 
-    private Supplier getsupplier(String id) {
+    private Supplier getSupplier(String id) {
         return supplierRepo.findById(id)
                 .orElseThrow(() -> new WarehouseAppException("Supplier not found: " + id));
     }

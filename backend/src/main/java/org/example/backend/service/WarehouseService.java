@@ -35,7 +35,8 @@ public class WarehouseService {
     }
 
     public Warehouse getWarehouseById(String id) {
-        return warehouseRepo.findById(id).orElse(null);
+        return warehouseRepo.findById(id)
+                .orElseThrow(() -> new WarehouseAppException("Warehouse not found: " + id));
     }
 
     public void deleteWarehouse(String id) {

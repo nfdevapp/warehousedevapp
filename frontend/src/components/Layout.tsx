@@ -1,23 +1,13 @@
-import Navbar from "./Navbar.tsx";
-import * as React from "react";
-import Footer from "../Footer.tsx";
-import Title from "../Title.tsx";
+import { Outlet } from "react-router-dom";
+import Navbar from "./Navbar";
 
-type LayoutProps = {
-    children: React.ReactNode;
-}
-
-export default function Layout({children}: LayoutProps) {
+export default function Layout() {
     return (
-        <>
-            <header>
-                <Title />
-                <Navbar />
-            </header>
-            <main>
-                {children}
+        <div className="min-h-screen flex flex-col">
+            <Navbar />
+            <main className="flex-1 max-w-6xl mx-auto w-full p-6">
+                <Outlet />
             </main>
-            <footer><Footer /></footer>
-        </>
+        </div>
     );
 }

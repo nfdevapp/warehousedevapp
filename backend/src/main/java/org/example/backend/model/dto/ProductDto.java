@@ -3,10 +3,12 @@ package org.example.backend.model.dto;
 import lombok.Builder;
 import lombok.With;
 import org.example.backend.utils.enums.Category;
+import org.springframework.data.annotation.Id;
 
 @With
 @Builder
-public record ProductDto(String name,
+public record ProductDto(@Id String id,
+                         String name,
                          String barcode,
                          String description,
                          int quantity,
