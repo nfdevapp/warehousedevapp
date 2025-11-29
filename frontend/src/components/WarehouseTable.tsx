@@ -2,45 +2,58 @@ import { useReactTable, getCoreRowModel, getSortedRowModel, flexRender } from "@
 import type { ColumnDef, SortingState } from "@tanstack/react-table";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Pencil, Trash } from "lucide-react";
 import type { Warehouse } from "@/types/Warehouse";
 
 type Props = {
     data: Warehouse[];
+    onDelete: (id: string) => void;
 };
 
-export default function WarehouseTable({ data }: Props) {
+export default function WarehouseTable({ data, onDelete }: Props) {
     const navigate = useNavigate();
     const [sorting, setSorting] = useState<SortingState>([]);
 
-    // ---- Spalten ----
     const columns: ColumnDef<Warehouse>[] = [
+        { accessorKey: "id", header: "ID" },
+        { accessorKey: "name", header: "Name" },
+        { accessorKey: "city", header: "Stadt" },
+        { accessorKey: "street", header: "Straße" },
+        { accessorKey: "houseNumber", header: "Nr." },
+        { accessorKey: "zipCode", header: "PLZ" },
+
         {
-            accessorKey: "id",
-            header: "ID",
+            id: "edit",
+            header: "",
+            cell: ({ row }) => (
+                <button
+                    onClick={e => { e.stopPropagation(); navigate(`/warehouse/edit/${row.original.id}`); }}
+                    className="text-blue-600 hover:text-blue-800"
+                >
+                    <Pencil size={18} />
+                </button>
+            ),
         },
+
         {
-            accessorKey: "name",
-            header: "Name",
-        },
-        {
-            accessorKey: "city",
-            header: "Stadt",
-        },
-        {
-            accessorKey: "street",
-            header: "Straße",
-        },
-        {
-            accessorKey: "houseNumber",
-            header: "Nr.",
-        },
-        {
-            accessorKey: "zipCode",
-            header: "PLZ",
-        },
+            id: "delete",
+            header: "",
+            cell: ({ row }) => (
+                <button
+                    onClick={e => {
+                        e.stopPropagation();
+                        if (confirm("Willst du dieses Lagerhaus wirklich löschen?")) {
+                            onDelete(row.original.id);
+                        }
+                    }}
+                    className="text-red-600 hover:text-red-800"
+                >
+                    <Trash size={18} />
+                </button>
+            ),
+        }
     ];
 
-    // ---- Tabelle initialisieren ----
     const table = useReactTable({
         data,
         columns,
@@ -54,17 +67,17 @@ export default function WarehouseTable({ data }: Props) {
         <div className="flex justify-center mt-8">
             <table className="min-w-[80%] border border-gray-300 rounded-lg shadow-md overflow-hidden">
                 <thead className="bg-gray-100">
-                {table.getHeaderGroups().map(headerGroup => (
-                    <tr key={headerGroup.id}>
-                        {headerGroup.headers.map(header => (
+                {table.getHeaderGroups().map(hg => (
+                    <tr key={hg.id}>
+                        {hg.headers.map(h => (
                             <th
-                                key={header.id}
-                                className="py-3 px-4 text-left font-semibold cursor-pointer select-none"
-                                onClick={header.column.getToggleSortingHandler()}
+                                key={h.id}
+                                className="py-3 px-4 text-left cursor-pointer select-none"
+                                onClick={h.column.getToggleSortingHandler()}
                             >
-                                {flexRender(header.column.columnDef.header, header.getContext())}
-                                {header.column.getIsSorted() === "asc" && " ↑"}
-                                {header.column.getIsSorted() === "desc" && " ↓"}
+                                {flexRender(h.column.columnDef.header, h.getContext())}
+                                {h.column.getIsSorted() === "asc" && " ↑"}
+                                {h.column.getIsSorted() === "desc" && " ↓"}
                             </th>
                         ))}
                     </tr>
