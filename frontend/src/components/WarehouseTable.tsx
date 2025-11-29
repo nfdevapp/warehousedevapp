@@ -1,13 +1,15 @@
 import { useReactTable, getCoreRowModel, getSortedRowModel, flexRender } from "@tanstack/react-table";
 import type { ColumnDef, SortingState } from "@tanstack/react-table";
 import { useState } from "react";
-import type { Warehouse } from "../types/Warehouse";
+import { useNavigate } from "react-router-dom";
+import type { Warehouse } from "@/types/Warehouse";
 
 type Props = {
     data: Warehouse[];
 };
 
 export default function WarehouseTable({ data }: Props) {
+    const navigate = useNavigate();
     const [sorting, setSorting] = useState<SortingState>([]);
 
     // ---- Spalten ----
@@ -30,7 +32,7 @@ export default function WarehouseTable({ data }: Props) {
         },
         {
             accessorKey: "houseNumber",
-            header: "Hausnummer",
+            header: "Nr.",
         },
         {
             accessorKey: "zipCode",
@@ -38,7 +40,7 @@ export default function WarehouseTable({ data }: Props) {
         },
     ];
 
-    // ---- Table ----
+    // ---- Tabelle initialisieren ----
     const table = useReactTable({
         data,
         columns,
@@ -50,7 +52,7 @@ export default function WarehouseTable({ data }: Props) {
 
     return (
         <div className="flex justify-center mt-8">
-            <table className="min-w-[80%] border border-gray-300 rounded-lg shadow-md">
+            <table className="min-w-[80%] border border-gray-300 rounded-lg shadow-md overflow-hidden">
                 <thead className="bg-gray-100">
                 {table.getHeaderGroups().map(headerGroup => (
                     <tr key={headerGroup.id}>
@@ -71,7 +73,11 @@ export default function WarehouseTable({ data }: Props) {
 
                 <tbody>
                 {table.getRowModel().rows.map(row => (
-                    <tr key={row.id} className="border-t hover:bg-gray-50">
+                    <tr
+                        key={row.id}
+                        className="border-t hover:bg-gray-50 cursor-pointer"
+                        onClick={() => navigate(`/product/warehouse/${row.original.id}`)}
+                    >
                         {row.getVisibleCells().map(cell => (
                             <td key={cell.id} className="py-2 px-4">
                                 {flexRender(cell.column.columnDef.cell, cell.getContext())}
