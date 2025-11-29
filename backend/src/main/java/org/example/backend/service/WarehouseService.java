@@ -35,6 +35,19 @@ public class WarehouseService {
                 .orElseThrow(() -> new WarehouseAppException("Warehouse not found: " + id));
     }
 
+    public Warehouse updateWarehouse(String id, Warehouse warehouse) {
+        Warehouse oldData = warehouseRepo.findById(id)
+                .orElseThrow(() -> new WarehouseAppException("Warehouse not found: " + id));
+        warehouseRepo.save(
+                oldData.
+                        withName(warehouse.name()).
+                        withCity(warehouse.city()).
+                        withStreet(warehouse.street()).
+                        withHouseNumber(warehouse.houseNumber()).
+                        withZipCode(warehouse.zipCode()));
+        return  warehouse;
+    }
+
     public void deleteWarehouse(String id) {
         Warehouse warehouse = warehouseRepo.findById(id)
                 .orElseThrow(() -> new WarehouseAppException("Warehouse not found: " + id));

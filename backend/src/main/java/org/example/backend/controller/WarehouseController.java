@@ -1,5 +1,6 @@
 package org.example.backend.controller;
 
+import org.example.backend.model.entities.Product;
 import org.example.backend.model.entities.Warehouse;
 import org.example.backend.repository.WarehouseRepo;
 import org.example.backend.service.WarehouseService;
@@ -30,6 +31,11 @@ public class WarehouseController {
     @GetMapping("/{id}")
     public Warehouse getWarehouseById(@PathVariable String id) {
         return warehouseService.getWarehouseById(id);
+    }
+
+    @PutMapping("/{id}")
+    public Warehouse updateWarehouse(@PathVariable String id, @RequestBody Warehouse warehouse) {
+        return  warehouseService.updateWarehouse(id, warehouse);
     }
 
     @DeleteMapping("/{id}")
