@@ -32,18 +32,6 @@ export default function ProductTable({ data }: Props) {
         {
             accessorKey: "quantity",
             header: "Menge",
-        },
-
-        // --- Kundendaten ---
-        {
-            accessorKey: "customerName",
-            header: "Kunde",
-        },
-
-        // --- Lieferant ---
-        {
-            accessorKey: "supplierName",
-            header: "Lieferant",
         }
     ];
 

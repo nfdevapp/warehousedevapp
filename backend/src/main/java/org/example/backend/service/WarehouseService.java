@@ -4,12 +4,8 @@ import org.example.backend.exceptions.WarehouseAppException;
 import org.example.backend.model.entities.Product;
 import org.example.backend.model.entities.Warehouse;
 import org.example.backend.repository.ProductRepo;
-import org.example.backend.repository.SupplierRepo;
 import org.example.backend.repository.WarehouseRepo;
-import org.example.backend.utils.enums.Category;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 

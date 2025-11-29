@@ -5,8 +5,6 @@ import WarehousePage from "./pages/WarehousePage";
 import WarehouseDetailPage from "./pages/WarehouseDetailPage";
 import ProductPage from "./pages/ProductPage";
 import ProductDetailPage from "./pages/ProductDetailPage";
-import SupplierPage from "./pages/SupplierPage";
-import CustomerPage from "./pages/CustomerPage";
 
 export default function App() {
     return (
@@ -15,8 +13,6 @@ export default function App() {
                 {/* Hauptseiten */}
                 <Route path="/" element={<WarehousePage />} />
                 <Route path="/product" element={<ProductPage />} />
-                <Route path="/supplier" element={<SupplierPage />} />
-                <Route path="/customer" element={<CustomerPage />} />
 
                 {/* Detailseiten */}
                 <Route path="/warehouse/:id" element={<WarehouseDetailPage />} />

@@ -9,8 +9,6 @@ export default function Navbar() {
             <ul className="flex justify-center gap-10 py-4 text-lg">
                 <li><Link to="/" className={active("/") ? "text-blue-600" : "hover:text-blue-600"}>Lagerhäuser</Link></li>
                 <li><Link to="/product" className={active("/product") ? "text-blue-600" : "hover:text-blue-600"}>Produkte</Link></li>
-                <li><Link to="/supplier" className={active("/supplier") ? "text-blue-600" : "hover:text-blue-600"}>Lieferanten</Link></li>
-                <li><Link to="/customer" className={active("/customer") ? "text-blue-600" : "hover:text-blue-600"}>Kunden</Link></li>
             </ul>
         </nav>
     );

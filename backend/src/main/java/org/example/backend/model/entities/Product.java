@@ -17,7 +17,5 @@ public record Product(
         String barcode,
         String description,
         int quantity,
-        String supplierId,
-        String customerId,
         String warehouseId) {
 }

@@ -1,6 +1,5 @@
 package org.example.backend.controller;
 
-import org.example.backend.model.dto.ProductDto;
 import org.example.backend.model.entities.Product;
 import org.example.backend.service.ProductService;
 import org.springframework.web.bind.annotation.*;
@@ -22,16 +21,16 @@ public class ProductController {
         return  productService.getAllProductsById(warehouseId);
     }
     @PostMapping
-    public Product createProduct(@RequestBody ProductDto product) {
+    public Product createProduct(@RequestBody Product product) {
         return productService.createProduct(product);
     }
     @GetMapping("/{id}")
-    public ProductDto getPoductById(@PathVariable String id) {
+    public Product getPoductById(@PathVariable String id) {
         return productService.getProductById(id);
     }
 
     @PutMapping("/{id}")
-    public ProductDto updateProduct(@PathVariable String id, @RequestBody ProductDto product) {
+    public Product updateProduct(@PathVariable String id, @RequestBody Product product) {
         return  productService.updateProduct(id, product);
     }
     @DeleteMapping("/{id}")
