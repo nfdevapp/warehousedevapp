@@ -22,6 +22,10 @@ class WarehouseServiceTest {
 
     private WarehouseService warehouseService;
 
+    /**
+     * vor jedem einzelnen Test ausführen, damit jeder Test
+     * eine frische, saubere Umgebung bekommt
+     */
     @BeforeEach
     void setup() {
         warehouseRepo = mock(WarehouseRepo.class);
@@ -123,4 +127,31 @@ class WarehouseServiceTest {
         verify(productService).deleteProduct("p2");
         verify(warehouseRepo).delete(w);
     }
+
+    /**
+     * Testet, dass alle Warehouses korrekt aus dem Repository gelesen werden.
+     */
+    @Test
+    void testGetAllWarehouses() {
+
+        // GIVEN: Das Repository enthält zwei Warehouses
+        Warehouse w1 = new Warehouse("1", "WH1", "City1", "Street1", "10", "11111");
+        Warehouse w2 = new Warehouse("2", "WH2", "City2", "Street2", "20", "22222");
+
+        when(warehouseRepo.findAll()).thenReturn(List.of(w1, w2));
+
+        // WHEN: getAllWarehouses() wird aufgerufen
+        List<Warehouse> result = warehouseService.getAllWarehouses();
+
+        // THEN: Die beiden Warehouses werden zurückgegeben
+        assertEquals(2, result.size());
+        assertTrue(result.contains(w1));
+        assertTrue(result.contains(w2));
+
+        // Zusätzlich prüfen: findAll() wurde einmal aufgerufen
+        verify(warehouseRepo).findAll();
+    }
+
+
+
 }

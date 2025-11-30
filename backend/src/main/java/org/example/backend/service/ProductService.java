@@ -3,7 +3,6 @@ package org.example.backend.service;
 import org.example.backend.exceptions.WarehouseAppException;
 import org.example.backend.model.entities.Product;
 import org.example.backend.repository.ProductRepo;
-import org.example.backend.repository.WarehouseRepo;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,7 +13,7 @@ public class ProductService {
     private final ProductRepo productRepo;
 
 
-    public ProductService(ProductRepo productRepo, WarehouseRepo warehouseRepo) {
+    public ProductService(ProductRepo productRepo) {
         this.productRepo = productRepo;
     }
 
