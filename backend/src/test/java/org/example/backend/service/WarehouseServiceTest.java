@@ -1,0 +1,126 @@
+package org.example.backend.service;
+
+import org.example.backend.exceptions.WarehouseAppException;
+import org.example.backend.model.entities.Product;
+import org.example.backend.model.entities.Warehouse;
+import org.example.backend.repository.ProductRepo;
+import org.example.backend.repository.WarehouseRepo;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import java.util.List;
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
+class WarehouseServiceTest {
+
+    private WarehouseRepo warehouseRepo;
+    private ProductRepo productRepo;
+    private ProductService productService;
+
+    private WarehouseService warehouseService;
+
+    @BeforeEach
+    void setup() {
+        warehouseRepo = mock(WarehouseRepo.class);
+        productRepo = mock(ProductRepo.class);
+        productService = mock(ProductService.class);
+        warehouseService = new WarehouseService(warehouseRepo, productRepo, productService);
+    }
+
+    /**
+     * Testet, dass ein Warehouse korrekt per ID gefunden wird.
+     */
+    @Test
+    void testGetWarehouseById_found() {
+
+        // GIVEN: Ein bestehendes Warehouse
+        Warehouse w = new Warehouse("1", "Test", "City", "Street", "1A", "12345");
+        when(warehouseRepo.findById("1")).thenReturn(Optional.of(w));
+
+        // WHEN: Die Methode aufgerufen wird
+        Warehouse result = warehouseService.getWarehouseById("1");
+
+        // THEN: Das Warehouse wird korrekt zurückgegeben
+        assertEquals("1", result.id());
+        verify(warehouseRepo).findById("1");
+    }
+
+    /**
+     * Testet, dass eine WarehouseAppException geworfen wird,
+     * wenn das Warehouse nicht existiert.
+     */
+    @Test
+    void testGetWarehouseById_notFound() {
+
+        // GIVEN: Keine Daten im Repository
+        when(warehouseRepo.findById("1")).thenReturn(Optional.empty());
+
+        // WHEN + THEN: Aufruf führt zu Exception
+        assertThrows(WarehouseAppException.class,
+                () -> warehouseService.getWarehouseById("1"));
+    }
+
+    /**
+     * Testet das Erstellen eines neuen Warehouses.
+     */
+    @Test
+    void testCreateWarehouse() {
+
+        // GIVEN: Ein Warehouse-Objekt
+        Warehouse w = new Warehouse("1", "Test", "City", "Street", "1A", "12345");
+        when(warehouseRepo.save(w)).thenReturn(w);
+
+        // WHEN: createWarehouse aufgerufen wird
+        Warehouse result = warehouseService.createWarehouse(w);
+
+        // THEN: Das Warehouse wird gespeichert und zurückgegeben
+        assertEquals(w, result);
+        verify(warehouseRepo).save(w);
+    }
+
+    /**
+     * Testet das Aktualisieren eines existierenden Warehouses.
+     */
+    @Test
+    void testUpdateWarehouse() {
+
+        // GIVEN: ein altes Warehouse im Repo
+        Warehouse oldW = new Warehouse("1", "Old", "OldC", "OldSt", "11", "00000");
+        Warehouse newW = new Warehouse("1", "New", "NewC", "NewSt", "22", "99999");
+        when(warehouseRepo.findById("1")).thenReturn(Optional.of(oldW));
+
+        // WHEN: updateWarehouse aufgerufen wird
+        warehouseService.updateWarehouse("1", newW);
+
+        // THEN: Das geänderte Warehouse wird gespeichert
+        verify(warehouseRepo).save(any(Warehouse.class));
+    }
+
+    /**
+     * Testet das Löschen eines Warehouses inklusive:
+     * - Löschen aller zugehörigen Produkte
+     * - Löschen des Warehouses selbst
+     */
+    @Test
+    void testDeleteWarehouse_withProducts() {
+
+        // GIVEN: Ein Warehouse und zwei zugehörige Produkte
+        Warehouse w = new Warehouse("1", "Test", "City", "Street", "1A", "12345");
+        Product p1 = new Product("p1", "Prod1", "1111111111111", "Testprodukt 1", 10, "1");
+        Product p2 = new Product("p2", "Prod2", "2222222222222", "Testprodukt 2", 20, "1");
+
+        when(warehouseRepo.findById("1")).thenReturn(Optional.of(w));
+        when(productRepo.findByWarehouseId("1")).thenReturn(List.of(p1, p2));
+
+        // WHEN: deleteWarehouse aufgerufen wird
+        warehouseService.deleteWarehouse("1");
+
+        // THEN: Produkte werden gelöscht und anschließend das Warehouse selbst
+        verify(productService).deleteProduct("p1");
+        verify(productService).deleteProduct("p2");
+        verify(warehouseRepo).delete(w);
+    }
+}
