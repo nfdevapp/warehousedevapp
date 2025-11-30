@@ -15,10 +15,10 @@ public class WarehouseService {
     private final ProductRepo productRepo;
     private final ProductService productService;
 
-    public WarehouseService(WarehouseRepo warehouseRepo, ProductService productService, ProductRepo productRepo, ProductService productService1) {
+    public WarehouseService(WarehouseRepo warehouseRepo, ProductRepo productRepo, ProductService productService) {
         this.warehouseRepo = warehouseRepo;
         this.productRepo = productRepo;
-        this.productService = productService1;
+        this.productService = productService;
     }
 
     public List<Warehouse> getAllWarehouses() {
