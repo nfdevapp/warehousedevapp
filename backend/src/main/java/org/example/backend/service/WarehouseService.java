@@ -27,14 +27,14 @@ public class WarehouseService {
 
     }
 
-    public Warehouse createWarehouse(WarehouseDto warehouseDto) {
-        Warehouse warehouse = Warehouse.builder()
+    public Warehouse createWarehouse(Warehouse warehouse) {
+        warehouse = Warehouse.builder()
                 .id(null)  // WICHTIG → Mongo generiert ID
-                .name(warehouseDto.name())
-                .city(warehouseDto.city())
-                .street(warehouseDto.street())
-                .houseNumber(warehouseDto.houseNumber())
-                .zipCode(warehouseDto.zipCode())
+                .name(warehouse.name())
+                .city(warehouse.city())
+                .street(warehouse.street())
+                .houseNumber(warehouse.houseNumber())
+                .zipCode(warehouse.zipCode())
                 .build();
 
         return warehouseRepo.save(warehouse);

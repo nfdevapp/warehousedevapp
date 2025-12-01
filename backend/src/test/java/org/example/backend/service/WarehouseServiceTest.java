@@ -1,7 +1,6 @@
 package org.example.backend.service;
 
 import org.example.backend.exceptions.WarehouseAppException;
-import org.example.backend.model.dto.WarehouseDto;
 import org.example.backend.model.entities.Product;
 import org.example.backend.model.entities.Warehouse;
 import org.example.backend.repository.ProductRepo;
@@ -73,38 +72,18 @@ class WarehouseServiceTest {
      */
     @Test
     void testCreateWarehouse() {
-        // GIVEN: Ein DTO ohne ID
-        WarehouseDto dto = WarehouseDto.builder()
-                .name("Test")
-                .city("City")
-                .street("Street")
-                .houseNumber("1A")
-                .zipCode("12345")
-                .build();
 
-        // Das erwartete Entity, das der Service erstellt (mit id=null!)
-        Warehouse expected = Warehouse.builder()
-                .id(null)
-                .name("Test")
-                .city("City")
-                .street("Street")
-                .houseNumber("1A")
-                .zipCode("12345")
-                .build();
+        // GIVEN: Ein Warehouse-Objekt
+        Warehouse w = new Warehouse("1", "Test", "City", "Street", "1A", "12345");
+        when(warehouseRepo.save(w)).thenReturn(w);
 
-        // Repo soll dieses Entity speichern und zurückgeben
-        when(warehouseRepo.save(expected)).thenReturn(
-                expected.withId("generatedId") // Repo setzt ID
-        );
+        // WHEN: createWarehouse aufgerufen wird
+        Warehouse result = warehouseService.createWarehouse(w);
 
-        // WHEN
-        Warehouse result = warehouseService.createWarehouse(dto);
-
-        // THEN
-        assertEquals("generatedId", result.id());
-        verify(warehouseRepo).save(expected);
+        // THEN: Das Warehouse wird gespeichert und zurückgegeben
+        assertEquals(w, result);
+        verify(warehouseRepo).save(w);
     }
-
 
     /**
      * Testet das Aktualisieren eines existierenden Warehouses.
