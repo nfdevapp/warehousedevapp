@@ -12,7 +12,6 @@ import org.springframework.data.mongodb.core.mapping.Document;
  */
 @With
 @Builder
-@Document(collection = "product")
 public record Product(
         @Id String id,
         String name,

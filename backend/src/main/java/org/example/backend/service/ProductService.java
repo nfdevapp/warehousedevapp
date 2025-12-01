@@ -2,6 +2,7 @@ package org.example.backend.service;
 
 import org.example.backend.exceptions.WarehouseAppException;
 import org.example.backend.model.entities.Product;
+import org.example.backend.model.entities.Warehouse;
 import org.example.backend.repository.ProductRepo;
 import org.springframework.stereotype.Service;
 
@@ -22,8 +23,15 @@ public class ProductService {
     }
 
     public Product createProduct(Product product) {
-        Product newProduct = product.withBarcode(generateBarcode());
-        return productRepo.save(newProduct);
+        Product toSave = Product.builder()
+                .name(product.name())
+                .barcode(generateBarcode())
+                .description(product.description())
+                .quantity(product.quantity())
+                .warehouseId(product.warehouseId())
+                .build(); // ID bleibt null, MongoDB generiert sie automatisch
+
+        return productRepo.save(toSave);
     }
 
     public Product getProductById(String id) {
