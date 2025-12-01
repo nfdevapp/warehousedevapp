@@ -12,21 +12,21 @@ type Props = {
 
 export default function ProductTable({ data, onDelete, onUpdate }: Props) {
     const [sorting, setSorting] = useState<SortingState>([]);
-    const [editId, setEditId] = useState<string | null>(null);
-    const [editData, setEditData] = useState<Product | null>(null);
+    const [editId, setEditId] = useState<string | null>(null); // ID des aktuell zu bearbeitenden Produkts
+    const [editData, setEditData] = useState<Product | null>(null); // Temporäre Daten während der Bearbeitung
 
     const startEdit = (row: Product) => {
-        setEditId(row.id);
-        setEditData({ ...row });
+        setEditId(row.id); // Bearbeitungsmodus aktivieren
+        setEditData({ ...row }); // Daten kopieren
     };
 
     const cancelEdit = () => {
-        setEditId(null);
+        setEditId(null); // Bearbeitung abbrechen
         setEditData(null);
     };
 
     const saveEdit = () => {
-        if (editData) onUpdate(editData);
+        if (editData) onUpdate(editData); // Änderungen speichern
         setEditId(null);
         setEditData(null);
     };
@@ -44,6 +44,7 @@ export default function ProductTable({ data, onDelete, onUpdate }: Props) {
             cell: ({ row }) =>
                 editId === row.original.id ? (
                     <div className="flex gap-2" onClick={(e) => e.stopPropagation()}>
+                        {/* Speichern */}
                         <button
                             onClick={(e) => {
                                 e.stopPropagation();
@@ -54,6 +55,7 @@ export default function ProductTable({ data, onDelete, onUpdate }: Props) {
                             <Check size={18} />
                         </button>
 
+                        {/* Abbrechen */}
                         <button
                             onClick={(e) => {
                                 e.stopPropagation();
@@ -65,6 +67,7 @@ export default function ProductTable({ data, onDelete, onUpdate }: Props) {
                         </button>
                     </div>
                 ) : (
+                    // Bearbeiten starten
                     <button
                         onClick={(e) => {
                             e.stopPropagation();
@@ -86,7 +89,7 @@ export default function ProductTable({ data, onDelete, onUpdate }: Props) {
                     onClick={(e) => {
                         e.stopPropagation();
                         if (confirm("Willst du dieses Produkt wirklich löschen?")) {
-                            onDelete(row.original.id);
+                            onDelete(row.original.id); // Produkt löschen
                         }
                     }}
                     className="text-red-600 hover:text-red-800"
@@ -100,8 +103,8 @@ export default function ProductTable({ data, onDelete, onUpdate }: Props) {
     const table = useReactTable({
         data,
         columns,
-        state: { sorting },
-        onSortingChange: setSorting,
+        state: { sorting }, // Sortierung im State
+        onSortingChange: setSorting, // Sortierung aktualisieren
         getCoreRowModel: getCoreRowModel(),
         getSortedRowModel: getSortedRowModel(),
     });
@@ -116,7 +119,7 @@ export default function ProductTable({ data, onDelete, onUpdate }: Props) {
                             <th
                                 key={h.id}
                                 className="py-3 px-4 text-left font-semibold cursor-pointer select-none"
-                                onClick={h.column.getToggleSortingHandler()}
+                                onClick={h.column.getToggleSortingHandler()} // Sortierung toggeln
                             >
                                 {flexRender(h.column.columnDef.header, h.getContext())}
                                 {h.column.getIsSorted() === "asc" && " ↑"}
@@ -140,6 +143,7 @@ export default function ProductTable({ data, onDelete, onUpdate }: Props) {
                             return (
                                 <td key={cell.id} className="py-2 px-4">
                                     {isEditing && editData && col in editData ? (
+                                        // Eingabefelder im Bearbeitungsmodus
                                         <input
                                             className="border p-1 rounded w-full"
                                             value={editData[col] as string | number}
@@ -155,6 +159,7 @@ export default function ProductTable({ data, onDelete, onUpdate }: Props) {
                                             }
                                         />
                                     ) : (
+                                        // Normalanzeige
                                         flexRender(cell.column.columnDef.cell, cell.getContext())
                                     )}
                                 </td>
