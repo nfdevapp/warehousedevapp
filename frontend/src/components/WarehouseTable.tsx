@@ -15,7 +15,6 @@ export default function WarehouseTable({ data, onDelete }: Props) {
     const [sorting, setSorting] = useState<SortingState>([]);
 
     const columns: ColumnDef<Warehouse>[] = [
-        { accessorKey: "id", header: "ID" },
         { accessorKey: "name", header: "Name" },
         { accessorKey: "city", header: "Stadt" },
         { accessorKey: "street", header: "Straße" },
