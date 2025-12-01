@@ -10,7 +10,6 @@ import org.springframework.data.mongodb.core.mapping.Document;
  */
 @With
 @Builder
-@Document(collection = "warehouse")//muss sonst wird keine id generiert
 public record Warehouse(
         @Id String id,
         String name,

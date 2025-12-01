@@ -1,6 +1,7 @@
 package org.example.backend.service;
 
 import org.example.backend.exceptions.WarehouseAppException;
+import org.example.backend.model.dto.WarehouseDto;
 import org.example.backend.model.entities.Product;
 import org.example.backend.model.entities.Warehouse;
 import org.example.backend.repository.ProductRepo;
@@ -26,7 +27,16 @@ public class WarehouseService {
 
     }
 
-    public Warehouse createWarehouse(Warehouse warehouse) {
+    public Warehouse createWarehouse(WarehouseDto warehouseDto) {
+        Warehouse warehouse = Warehouse.builder()
+                .id(null)  // WICHTIG → Mongo generiert ID
+                .name(warehouseDto.name())
+                .city(warehouseDto.city())
+                .street(warehouseDto.street())
+                .houseNumber(warehouseDto.houseNumber())
+                .zipCode(warehouseDto.zipCode())
+                .build();
+
         return warehouseRepo.save(warehouse);
     }
 

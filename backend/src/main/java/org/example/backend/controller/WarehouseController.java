@@ -1,5 +1,6 @@
 package org.example.backend.controller;
 
+import org.example.backend.model.dto.WarehouseDto;
 import org.example.backend.model.entities.Product;
 import org.example.backend.model.entities.Warehouse;
 import org.example.backend.repository.WarehouseRepo;
@@ -24,8 +25,8 @@ public class WarehouseController {
     }
 
     @PostMapping
-    public Warehouse createWarehouse(@RequestBody Warehouse warehouse) {
-        return  warehouseService.createWarehouse(warehouse);
+    public Warehouse createWarehouse(@RequestBody WarehouseDto warehouseDto) {
+        return  warehouseService.createWarehouse(warehouseDto);
     }
 
     @GetMapping("/{id}")

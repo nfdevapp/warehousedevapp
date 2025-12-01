@@ -1,5 +1,5 @@
 export type Warehouse = {
-    id: string;
+    // id: string;
     name: string;
     city: string;
     street: string;
