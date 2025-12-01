@@ -29,7 +29,7 @@ public class WarehouseService {
 
     public Warehouse createWarehouse(Warehouse warehouse) {
         warehouse = Warehouse.builder()
-                .id(null)  // WICHTIG → Mongo generiert ID
+                .id(null)  // WICHTIG: Mongo generiert ID
                 .name(warehouse.name())
                 .city(warehouse.city())
                 .street(warehouse.street())
@@ -37,7 +37,8 @@ public class WarehouseService {
                 .zipCode(warehouse.zipCode())
                 .build();
 
-        return warehouseRepo.save(warehouse);
+        Warehouse save = warehouseRepo.save(warehouse);
+        return save;
     }
 
     public Warehouse getWarehouseById(String id) {
