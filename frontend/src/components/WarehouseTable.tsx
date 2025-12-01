@@ -1,18 +1,36 @@
+// Inline-edit version of WarehouseTable
 import { useReactTable, getCoreRowModel, getSortedRowModel, flexRender } from "@tanstack/react-table";
 import type { ColumnDef, SortingState } from "@tanstack/react-table";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { Pencil, Trash } from "lucide-react";
+import { Pencil, Trash, Check, X } from "lucide-react";
 import type { Warehouse } from "@/types/Warehouse";
 
 type Props = {
     data: Warehouse[];
     onDelete: (id: string) => void;
+    onUpdate: (updated: Warehouse) => void;
 };
 
-export default function WarehouseTable({ data, onDelete }: Props) {
-    const navigate = useNavigate();
+export default function WarehouseTable({ data, onDelete, onUpdate }: Props) {
     const [sorting, setSorting] = useState<SortingState>([]);
+    const [editId, setEditId] = useState<string | null>(null);
+    const [editData, setEditData] = useState<Warehouse | null>(null);
+
+    const startEdit = (row: Warehouse) => {
+        setEditId(row.id);
+        setEditData({ ...row });
+    };
+
+    const cancelEdit = () => {
+        setEditId(null);
+        setEditData(null);
+    };
+
+    const saveEdit = () => {
+        if (editData) onUpdate(editData);
+        setEditId(null);
+        setEditData(null);
+    };
 
     const columns: ColumnDef<Warehouse>[] = [
         { accessorKey: "name", header: "Name" },
@@ -24,14 +42,23 @@ export default function WarehouseTable({ data, onDelete }: Props) {
         {
             id: "edit",
             header: "",
-            cell: ({ row }) => (
-                <button
-                    onClick={e => { e.stopPropagation(); navigate(`/warehouse/edit/${row.original.id}`); }}
-                    className="text-blue-600 hover:text-blue-800"
-                >
-                    <Pencil size={18} />
-                </button>
-            ),
+            cell: ({ row }) =>
+                editId === row.original.id ? (
+                    <div className="flex gap-2">
+                        <button onClick={saveEdit} className="text-green-600 hover:text-green-800"><Check size={18} /></button>
+                        <button onClick={cancelEdit} className="text-gray-600 hover:text-gray-800"><X size={18} /></button>
+                    </div>
+                ) : (
+                    <button
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            startEdit(row.original);
+                        }}
+                        className="text-blue-600 hover:text-blue-800"
+                    >
+                        <Pencil size={18} />
+                    </button>
+                ),
         },
 
         {
@@ -39,41 +66,28 @@ export default function WarehouseTable({ data, onDelete }: Props) {
             header: "",
             cell: ({ row }) => (
                 <button
-                    onClick={e => {
+                    onClick={(e) => {
                         e.stopPropagation();
-                        if (confirm("Willst du dieses Lagerhaus wirklich löschen?")) {
-                            onDelete(row.original.id);
-                        }
+                        if (confirm("Willst du dieses Lagerhaus wirklich löschen?")) onDelete(row.original.id);
                     }}
                     className="text-red-600 hover:text-red-800"
                 >
                     <Trash size={18} />
                 </button>
             ),
-        }
+        },
     ];
 
-    const table = useReactTable({
-        data,
-        columns,
-        state: { sorting },
-        onSortingChange: setSorting,
-        getCoreRowModel: getCoreRowModel(),
-        getSortedRowModel: getSortedRowModel(),
-    });
+    const table = useReactTable({ data, columns, state: { sorting }, onSortingChange: setSorting, getCoreRowModel: getCoreRowModel(), getSortedRowModel: getSortedRowModel() });
 
     return (
         <div className="flex justify-center mt-8">
             <table className="min-w-[80%] border border-gray-300 rounded-lg shadow-md overflow-hidden">
                 <thead className="bg-gray-100">
-                {table.getHeaderGroups().map(hg => (
+                {table.getHeaderGroups().map((hg) => (
                     <tr key={hg.id}>
-                        {hg.headers.map(h => (
-                            <th
-                                key={h.id}
-                                className="py-3 px-4 text-left cursor-pointer select-none"
-                                onClick={h.column.getToggleSortingHandler()}
-                            >
+                        {hg.headers.map((h) => (
+                            <th key={h.id} className="py-3 px-4 text-left cursor-pointer select-none" onClick={h.column.getToggleSortingHandler()}>
                                 {flexRender(h.column.columnDef.header, h.getContext())}
                                 {h.column.getIsSorted() === "asc" && " ↑"}
                                 {h.column.getIsSorted() === "desc" && " ↓"}
@@ -84,17 +98,26 @@ export default function WarehouseTable({ data, onDelete }: Props) {
                 </thead>
 
                 <tbody>
-                {table.getRowModel().rows.map(row => (
-                    <tr
-                        key={row.id}
-                        className="border-t hover:bg-gray-50 cursor-pointer"
-                        onClick={() => navigate(`/product/warehouse/${row.original.id}`)}
-                    >
-                        {row.getVisibleCells().map(cell => (
-                            <td key={cell.id} className="py-2 px-4">
-                                {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                            </td>
-                        ))}
+                {table.getRowModel().rows.map((row) => (
+                    <tr key={row.id} className="border-t hover:bg-gray-50">
+                        {row.getVisibleCells().map((cell) => {
+                            const isEditing = editId === row.original.id;
+                            const key = cell.column.id as keyof Warehouse;
+
+                            return (
+                                <td key={cell.id} className="py-2 px-4">
+                                    {isEditing && editData && key in editData ? (
+                                        <input
+                                            className="border p-1 rounded w-full"
+                                            value={editData[key] as string}
+                                            onChange={(e) => setEditData({ ...editData, [key]: e.target.value })}
+                                        />
+                                    ) : (
+                                        flexRender(cell.column.columnDef.cell, cell.getContext())
+                                    )}
+                                </td>
+                            );
+                        })}
                     </tr>
                 ))}
                 </tbody>
@@ -102,3 +125,4 @@ export default function WarehouseTable({ data, onDelete }: Props) {
         </div>
     );
 }
+

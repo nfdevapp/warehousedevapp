@@ -8,48 +8,50 @@ export default function WarehousePage() {
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
 
-    const [newWH, setNewWH] = useState<Warehouse>({
-        id: "", name: "", city: "", street: "", houseNumber: "", zipCode: ""
-    });
+
+    const [newWH, setNewWH] = useState<Warehouse>({ id: "", name: "", city: "", street: "", houseNumber: "", zipCode: "" });
+
 
     useEffect(() => {
-        axios.get("/api/warehouse")
-            .then(res => setWarehouses(res.data))
-            .finally(() => setLoading(false));
+        axios.get("/api/warehouse").then((res) => setWarehouses(res.data)).finally(() => setLoading(false));
     }, []);
+
 
     const createWarehouse = () => {
         setSaving(true);
+        axios.post("/api/warehouse", newWH).then((res) => {
+            setWarehouses((prev) => [...prev, res.data]);
+            setNewWH({ id: "", name: "", city: "", street: "", houseNumber: "", zipCode: "" });
+        }).finally(() => setSaving(false));
+    };
 
-        axios.post("/api/warehouse", newWH)
-            .then(res => {
-                setWarehouses(prev => [...prev, res.data]);
-                setNewWH({ id: "", name: "", city: "", street: "", houseNumber: "", zipCode: "" });
-            })
+
+    const deleteWarehouse = (id: string) => {
+        axios.delete(`/api/warehouse/${id}`).then(() => setWarehouses((prev) => prev.filter((w) => w.id !== id)));
+    };
+
+
+    const updateWarehouse = (updated: Warehouse) => {
+        setSaving(true);
+        axios.put(`/api/warehouse/${updated.id}`, updated)
+            .then(() => setWarehouses((prev) => prev.map((w) => (w.id === updated.id ? updated : w))))
             .finally(() => setSaving(false));
     };
 
-    const deleteWarehouse = (id: string) => {
-        axios.delete(`/api/warehouse/${id}`)
-            .then(() => {
-                setWarehouses(prev => prev.filter(w => w.id !== id));
-            });
-    };
 
     if (loading) return <p className="text-center mt-10">Lade Daten...</p>;
 
+
     return (
         <div className="p-6">
-            {saving && (
-                <p className="text-center mb-4 text-green-600 font-semibold">
-                    Speichere Daten...
-                </p>
-            )}
+            {saving && <p className="text-center mb-4 text-green-600 font-semibold">Speichere Daten...</p>}
+
 
             <h1 className="text-2xl font-bold mb-6 text-center">Lagerhäuser</h1>
 
+
             <div className="flex gap-2 justify-center mb-6">
-                {["name","city","street","houseNumber","zipCode"].map(f => (
+                {["name", "city", "street", "houseNumber", "zipCode"].map((f) => (
                     <input
                         key={f}
                         placeholder={f}
@@ -58,15 +60,11 @@ export default function WarehousePage() {
                         onChange={(e) => setNewWH({ ...newWH, [f]: e.target.value })}
                     />
                 ))}
-                <button
-                    onClick={createWarehouse}
-                    className="bg-green-600 text-white px-3 py-1 rounded"
-                >
-                    +
-                </button>
+                <button onClick={createWarehouse} className="bg-green-600 text-white px-3 py-1 rounded">+</button>
             </div>
 
-            <WarehouseTable data={warehouses} onDelete={deleteWarehouse} />
+
+            <WarehouseTable data={warehouses} onDelete={deleteWarehouse} onUpdate={updateWarehouse} />
         </div>
     );
 }
