@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import axios from "axios";
 import type { Product } from "../types/Product";
 import type { Warehouse } from "../types/Warehouse";
 import ProductTable from "@/components/ProductTable";
@@ -16,12 +17,12 @@ export default function ProductPage() {
         async function loadData() {
             try {
                 // Produkte laden
-                const p = await fetch(`/api/product/warehouse/${id}`).then(r => r.json());
-                setProducts(p);
+                const pRes = await axios.get(`/api/product/warehouse/${id}`);
+                setProducts(pRes.data);
 
-                // Lagerhaus-Name laden
-                const w = await fetch(`/api/warehouse/${id}`).then(r => r.json());
-                setWarehouse(w);
+                // Lagerhaus laden
+                const wRes = await axios.get(`/api/warehouse/${id}`);
+                setWarehouse(wRes.data);
 
             } catch (err) {
                 console.error("Fehler beim Laden:", err);
@@ -38,8 +39,7 @@ export default function ProductPage() {
     return (
         <div className="p-6">
             <h1 className="text-2xl font-bold mb-6 text-center">
-                Lagerhaus:{" "}
-                {warehouse?.name ?? "Unbekannt"}
+                Lagerhaus: {warehouse?.name ?? "Unbekannt"}
             </h1>
 
             <ProductTable data={products} />
