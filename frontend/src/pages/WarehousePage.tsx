@@ -36,7 +36,7 @@ export default function WarehousePage() {
             });
     };
 
-    if (loading) return <p className="text-center mt-10 text-red-600">Lade Daten...</p>;
+    if (loading) return <p className="text-center mt-10">Lade Daten...</p>;
 
     return (
         <div className="p-6">
