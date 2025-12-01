@@ -7,6 +7,7 @@ export default function WarehousePage() {
     const [warehouses, setWarehouses] = useState<Warehouse[]>([]);
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
+    const [error, setError] = useState<string | null>(null);
 
     const [newWH, setNewWH] = useState<Warehouse>({
         id: "",
@@ -21,6 +22,7 @@ export default function WarehousePage() {
         axios
             .get("/api/warehouse")
             .then((res) => setWarehouses(res.data))
+            .catch(() => setError("Fehler beim Laden der Lagerhaus-Daten"))
             .finally(() => setLoading(false));
     }, []);
 
@@ -36,9 +38,10 @@ export default function WarehousePage() {
     };
 
     const deleteWarehouse = (id: string) => {
-        axios
-            .delete(`/api/warehouse/${id}`)
-            .then(() => setWarehouses((prev) => prev.filter((w) => w.id !== id)));
+        axios.delete(`/api/warehouse/${id}`)
+            .then(() => {
+                setWarehouses((prev) => prev.filter((w) => w.id !== id));
+            });
     };
 
     const updateWarehouse = (updated: Warehouse) => {
@@ -55,10 +58,14 @@ export default function WarehousePage() {
 
     if (loading) return <p className="text-center mt-10">Lade Daten...</p>;
 
+    if (error) return <p className="text-center mt-10 text-red-600">{error}</p>;
+
     return (
         <div className="p-6">
             {saving && (
-                <p className="text-center mb-4 text-green-600 font-semibold">Speichere Daten...</p>
+                <p className="text-center mb-4 text-green-600 font-semibold">
+                    Speichere Daten...
+                </p>
             )}
 
             <h1 className="text-2xl font-bold mb-6 text-center">Lagerhäuser</h1>

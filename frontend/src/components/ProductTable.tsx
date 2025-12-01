@@ -14,10 +14,6 @@ export default function ProductTable({ data }: Props) {
     const columns: ColumnDef<Product>[] = [
         // --- Produktdaten ---
         {
-            accessorKey: "id",
-            header: "ID",
-        },
-        {
             accessorKey: "name",
             header: "Produktname",
         },
