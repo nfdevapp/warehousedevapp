@@ -28,17 +28,15 @@ public class WarehouseService {
     }
 
     public Warehouse createWarehouse(Warehouse warehouse) {
-        warehouse = Warehouse.builder()
-                .id(null)  // WICHTIG: Mongo generiert ID
+        Warehouse toSave = Warehouse.builder()
                 .name(warehouse.name())
                 .city(warehouse.city())
                 .street(warehouse.street())
                 .houseNumber(warehouse.houseNumber())
                 .zipCode(warehouse.zipCode())
-                .build();
+                .build(); // ID bleibt null, MongoDB generiert sie automatisch
 
-        Warehouse save = warehouseRepo.save(warehouse);
-        return save;
+        return warehouseRepo.save(toSave);
     }
 
     public Warehouse getWarehouseById(String id) {
