@@ -106,7 +106,7 @@ export default function ProductPage() {
 
             {/* Eingabefelder für neues Produkt */}
             <div className="flex gap-2 justify-center mb-6">
-                {["name", "barcode", "description"].map((field) => (
+                {["name", "description"].map((field) => (
                     <input
                         key={field}
                         placeholder={field}
