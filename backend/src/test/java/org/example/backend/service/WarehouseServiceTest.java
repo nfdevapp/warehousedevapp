@@ -74,15 +74,39 @@ class WarehouseServiceTest {
     void testCreateWarehouse() {
 
         // GIVEN: Ein Warehouse-Objekt
-        Warehouse w = new Warehouse("1", "Test", "City", "Street", "1A", "12345");
-        when(warehouseRepo.save(w)).thenReturn(w);
+        // given – Eingabe des Users (ID = null)
+        Warehouse input = Warehouse.builder()
+                .name("Zentrallager")
+                .city("Berlin")
+                .street("Hauptstr")
+                .houseNumber("10A")
+                .zipCode("10115")
+                .build();
+
+        // Erwartetes Objekt nach dem Speichern (MongoDB setzt ID)
+        Warehouse saved = Warehouse.builder()
+                .id("123456")
+                .name(input.name())
+                .city(input.city())
+                .street(input.street())
+                .houseNumber(input.houseNumber())
+                .zipCode(input.zipCode())
+                .build();
+
+        // Verhalten des Repos mocken
+        when(warehouseRepo.save(any(Warehouse.class))).thenReturn(saved);
+
 
         // WHEN: createWarehouse aufgerufen wird
-        Warehouse result = warehouseService.createWarehouse(w);
+        Warehouse result = warehouseService.createWarehouse(input);
 
         // THEN: Das Warehouse wird gespeichert und zurückgegeben
-        assertEquals(w, result);
-        verify(warehouseRepo).save(w);
+        assertNotNull(result);
+        assertEquals("123456", result.id());
+        assertEquals("Zentrallager", result.name());
+
+        // sicherstellen, dass save() genau einmal aufgerufen wurde
+        verify(warehouseRepo, times(1)).save(any(Warehouse.class));
     }
 
     /**
