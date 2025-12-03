@@ -1,5 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
-// import { useAuth } from "../context/AuthContext"; // Beispiel
+// import { useAuth } from "../context/AuthContext";
 
 export default function Navbar() {
     const { pathname } = useLocation();
