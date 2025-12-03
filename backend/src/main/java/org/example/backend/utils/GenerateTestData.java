@@ -22,6 +22,7 @@ public class GenerateTestData {
 
     @PostConstruct
     public void init() {
+        //if Testdata exist
         if (!warehouseService.getAllWarehouses().isEmpty()) {;
             return;
         }
@@ -65,7 +66,6 @@ public class GenerateTestData {
                 Product.builder().name("Creme").description("Gesichtscreme").quantity(180).warehouseId(w3).build(),
                 Product.builder().name("T-Shirt").description("Baumwolle").quantity(340).warehouseId(w1).build()
         );
-
         products.forEach(productService::createProduct);
     }
 }
