@@ -97,6 +97,105 @@ class ProductServiceTest {
         verify(productRepo).findById("p1");
     }
 
-//    TODO
-//    createProduct, updateProduct, deleteProduct
+    /**
+     * Testet, dass ein Produkt korrekt erstellt wird.
+     */
+    @Test
+    @WithMockUser
+    void testCreateProduct() {
+
+        // GIVEN
+        Product input = new Product(null, "Produkt X", null, "Beschreibung X", 20, "W1");
+
+        // Repo soll das gespeicherte Produkt zurückgeben
+        Product saved = new Product("123", "Produkt X", "BARCODE123", "Beschreibung X", 20, "W1");
+
+        // ANY Product speichern → saved zurückgeben
+        when(productRepo.save(any(Product.class))).thenReturn(saved);
+
+        // WHEN
+        Product result = productService.createProduct(input);
+
+        // THEN
+        assertNotNull(result);
+        assertEquals("Produkt X", result.name());
+        assertEquals("Beschreibung X", result.description());
+        assertEquals(20, result.quantity());
+        assertEquals("W1", result.warehouseId());
+
+        // Barcode wird im Service generiert
+        assertNotNull(result.barcode());
+
+        verify(productRepo).save(any(Product.class));
+    }
+
+    @Test
+    @WithMockUser
+    void testUpdateProduct_success() {
+
+        // GIVEN: existierendes Produkt
+        Product oldProduct = new Product("p1", "Alt", "OLD123", "Alt Beschreibung", 10, "W1");
+
+        when(productRepo.findById("p1")).thenReturn(Optional.of(oldProduct));
+
+        Product updatedData = new Product(
+                "p1", "Neu", "NEW456", "Neue Beschreibung", 99, "W1"
+        );
+
+        // WHEN
+        Product result = productService.updateProduct("p1", updatedData);
+
+        // THEN
+        assertEquals("Neu", result.name());
+        assertEquals("Neue Beschreibung", result.description());
+        assertEquals(99, result.quantity());
+        assertEquals("NEW456", result.barcode());
+
+        // Verify repo interactions
+        verify(productRepo).findById("p1");
+        verify(productRepo).save(any(Product.class));
+    }
+
+
+    /**
+     * Testet, dass Update eine Exception wirft,
+     * wenn die ID nicht existiert.
+     */
+    @Test
+    @WithMockUser
+    void testUpdateProduct_notFound() {
+
+        // GIVEN
+        when(productRepo.findById("p1")).thenReturn(Optional.empty());
+
+        Product newData = new Product("p1", "Neu", "NEW456", "Neue Beschreibung", 20, "W1");
+
+        // WHEN + THEN
+        WarehouseAppException ex = assertThrows(
+                WarehouseAppException.class,
+                () -> productService.updateProduct("p1", newData)
+        );
+
+        assertTrue(ex.getMessage().contains("Product not found: p1"));
+
+        verify(productRepo).findById("p1");
+        verify(productRepo, never()).save(any());
+    }
+
+
+    /**
+     * Testet das Löschen eines Produkts per ID.
+     */
+    @Test
+    @WithMockUser
+    void testDeleteProduct() {
+
+        // WHEN
+        productService.deleteProduct("p1");
+
+        // THEN
+        verify(productRepo).deleteById("p1");
+    }
+
+
 }

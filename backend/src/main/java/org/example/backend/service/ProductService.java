@@ -2,7 +2,6 @@ package org.example.backend.service;
 
 import org.example.backend.exceptions.WarehouseAppException;
 import org.example.backend.model.entities.Product;
-import org.example.backend.model.entities.Warehouse;
 import org.example.backend.repository.ProductRepo;
 import org.springframework.stereotype.Service;
 
