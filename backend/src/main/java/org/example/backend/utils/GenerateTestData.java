@@ -20,9 +20,11 @@ public class GenerateTestData {
         this.productService = productService;
     }
 
-    //Startet Methode automatisch nach dem Erstellen des Beans.
     @PostConstruct
     public void init() {
+        if (!warehouseService.getAllWarehouses().isEmpty()) {;
+            return;
+        }
         createWarehouses();
         createProducts();
     }
@@ -43,10 +45,8 @@ public class GenerateTestData {
                 .toList();
     }
 
-
     private void createProducts() {
 
-        // Warehouses holen, damit wir deren dynamisch generierte IDs verwenden können
         List<Warehouse> warehouses = warehouseService.getAllWarehouses();
         String w1 = warehouses.get(0).id();
         String w2 = warehouses.get(1).id();
