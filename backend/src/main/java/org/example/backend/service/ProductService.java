@@ -1,5 +1,6 @@
 package org.example.backend.service;
 
+import lombok.RequiredArgsConstructor;
 import org.example.backend.exceptions.WarehouseAppException;
 import org.example.backend.model.entities.Product;
 import org.example.backend.repository.ProductRepo;
@@ -9,13 +10,9 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 public class ProductService {
     private final ProductRepo productRepo;
-
-
-    public ProductService(ProductRepo productRepo) {
-        this.productRepo = productRepo;
-    }
 
     public List<Product> getAllProductsById(String warehouseId) {
         return  productRepo.findByWarehouseId(warehouseId);

@@ -1,5 +1,6 @@
 package org.example.backend.service;
 
+import lombok.RequiredArgsConstructor;
 import org.example.backend.exceptions.WarehouseAppException;
 import org.example.backend.model.dto.WarehouseDto;
 import org.example.backend.model.entities.Product;
@@ -11,16 +12,11 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class WarehouseService {
     private final WarehouseRepo warehouseRepo;
     private final ProductRepo productRepo;
     private final ProductService productService;
-
-    public WarehouseService(WarehouseRepo warehouseRepo, ProductRepo productRepo, ProductService productService) {
-        this.warehouseRepo = warehouseRepo;
-        this.productRepo = productRepo;
-        this.productService = productService;
-    }
 
     public List<Warehouse> getAllWarehouses() {
         return  warehouseRepo.findAll();
