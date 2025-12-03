@@ -3,12 +3,17 @@ import axios from "axios";
 import type { Warehouse } from "../types/Warehouse";
 import WarehouseTable from "@/components/WarehouseTable";
 
+// Hauptkomponente für die Lagerhaus-Verwaltung
 export default function WarehousePage() {
+    // Zustand für die geladenen Lagerhäuser
     const [warehouses, setWarehouses] = useState<Warehouse[]>([]);
+
+    // Anzeigezustände für Laden, Speichern und Fehler
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
+    // Zustand für ein neues Lagerhaus-Objekt
     const [newWH, setNewWH] = useState<Warehouse>({
         id: "",
         name: "",
@@ -18,6 +23,7 @@ export default function WarehousePage() {
         zipCode: "",
     });
 
+    // Lädt die vorhandenen Lagerhäuser beim ersten Rendern
     useEffect(() => {
         axios
             .get("/api/warehouse")
@@ -26,24 +32,30 @@ export default function WarehousePage() {
             .finally(() => setLoading(false));
     }, []);
 
+    // Erstellt ein neues Lagerhaus
     const createWarehouse = () => {
         setSaving(true);
         axios
             .post("/api/warehouse", newWH)
             .then((res) => {
+                // Neues Lagerhaus zur Tabelle hinzufügen
                 setWarehouses((prev) => [...prev, res.data]);
+                // Eingabeformular zurücksetzen
                 setNewWH({ id: "", name: "", city: "", street: "", houseNumber: "", zipCode: "" });
             })
             .finally(() => setSaving(false));
     };
 
+    // Löscht ein Lagerhaus anhand der ID
     const deleteWarehouse = (id: string) => {
         axios.delete(`/api/warehouse/${id}`)
             .then(() => {
+                // Gefilterte Liste ohne das gelöschte Lagerhaus
                 setWarehouses((prev) => prev.filter((w) => w.id !== id));
             });
     };
 
+    // Aktualisiert ein bestehendes Lagerhaus
     const updateWarehouse = (updated: Warehouse) => {
         setSaving(true);
         axios
@@ -56,12 +68,15 @@ export default function WarehousePage() {
             .finally(() => setSaving(false));
     };
 
+    // Ladeanzeige
     if (loading) return <p className="text-center mt-10">Lade Daten...</p>;
 
+    // Fehleranzeige
     if (error) return <p className="text-center mt-10 text-red-600">{error}</p>;
 
     return (
         <div className="p-6">
+            {/* Anzeige beim Speichern */}
             {saving && (
                 <p className="text-center mb-4 text-green-600 font-semibold">
                     Speichere Daten...
@@ -70,8 +85,9 @@ export default function WarehousePage() {
 
             <h1 className="text-2xl font-bold mb-6 text-center">Lagerhäuser</h1>
 
+            {/* Eingabeformular für ein neues Lagerhaus */}
             <div className="flex gap-2 justify-center mb-6">
-                {["name", "city", "street", "houseNumber", "zipCode"].map((f) => (
+                {['name', 'city', 'street', 'houseNumber', 'zipCode'].map((f) => (
                     <input
                         key={f}
                         placeholder={f}
@@ -88,6 +104,7 @@ export default function WarehousePage() {
                 </button>
             </div>
 
+            {/* Tabelle mit allen Lagerhäusern */}
             <WarehouseTable
                 data={warehouses}
                 onDelete={deleteWarehouse}

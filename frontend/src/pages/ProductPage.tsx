@@ -5,16 +5,21 @@ import type { Product } from "../types/Product";
 import type { Warehouse } from "../types/Warehouse";
 import ProductTable from "@/components/ProductTable";
 
+// Seite zur Anzeige und Verwaltung von Produkten eines bestimmten Lagerhauses
 export default function ProductPage() {
+    // ID aus der URL lesen
     const { id } = useParams();
 
+    // Zustand für Produkte und Lagerhaus
     const [products, setProducts] = useState<Product[]>([]);
     const [warehouse, setWarehouse] = useState<Warehouse | null>(null);
 
+    // Anzeigezustände
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
+    // Neues Produkt
     const [newProduct, setNewProduct] = useState<Product>({
         id: "",
         name: "",
@@ -24,11 +29,13 @@ export default function ProductPage() {
         warehouseId: id ?? "",
     });
 
+    // Lädt Produkte und das Lagerhaus
     useEffect(() => {
         if (!id) return;
 
         async function loadData() {
             try {
+                // Produkte + Lagerhaus parallel laden
                 const [pRes, wRes] = await Promise.all([
                     axios.get(`/api/product/warehouse/${id}`),
                     axios.get(`/api/warehouse/${id}`),
@@ -55,7 +62,9 @@ export default function ProductPage() {
 
         axios.post("/api/product", { ...newProduct, warehouseId: id })
             .then((res) => {
+                // Neues Produkt hinzufügen
                 setProducts((prev) => [...prev, res.data]);
+                // Eingaben zurücksetzen
                 setNewProduct({
                     id: "",
                     name: "",
@@ -76,7 +85,7 @@ export default function ProductPage() {
             });
     };
 
-    // Produkt bearbeiten
+    // Produkt aktualisieren
     const updateProduct = (updated: Product) => {
         setSaving(true);
 
@@ -89,11 +98,15 @@ export default function ProductPage() {
             .finally(() => setSaving(false));
     };
 
+    // Ladeanzeige
     if (loading) return <p className="text-center mt-10">Lade Daten...</p>;
+
+    // Fehleranzeige
     if (error) return <p className="text-center mt-10 text-red-600">{error}</p>;
 
     return (
         <div className="p-6">
+            {/* Speichern-Hinweis */}
             {saving && (
                 <p className="text-center mb-4 text-green-600 font-semibold">
                     Speichere Daten...
@@ -104,7 +117,7 @@ export default function ProductPage() {
                 Lagerhaus: {warehouse?.name ?? "Unbekannt"}
             </h1>
 
-            {/* Eingabefelder für neues Produkt */}
+            {/* Eingabeformular für neues Produkt */}
             <div className="flex gap-2 justify-center mb-6">
                 {["name", "description"].map((field) => (
                     <input
@@ -136,6 +149,7 @@ export default function ProductPage() {
                 </button>
             </div>
 
+            {/* Tabelle mit Produkten */}
             <ProductTable
                 data={products}
                 onDelete={deleteProduct}

@@ -11,43 +11,54 @@ type Props = {
 };
 
 export default function ProductTable({ data, onDelete, onUpdate }: Props) {
+
+    // Zustand für Sortierung der Tabelle
     const [sorting, setSorting] = useState<SortingState>([]);
-    const [editId, setEditId] = useState<string | null>(null); // ID des aktuell zu bearbeitenden Produkts
-    const [editData, setEditData] = useState<Product | null>(null); // Temporäre Daten während der Bearbeitung
 
+    // ID des Produkts, das aktuell bearbeitet wird
+    const [editId, setEditId] = useState<string | null>(null);
+
+    // Temporäre Daten während der Inline-Bearbeitung
+    const [editData, setEditData] = useState<Product | null>(null);
+
+    // Bearbeitungsmodus für ein Produkt aktivieren
     const startEdit = (row: Product) => {
-        setEditId(row.id); // Bearbeitungsmodus aktivieren
-        setEditData({ ...row }); // Daten kopieren
+        setEditId(row.id);
+        setEditData({ ...row }); // Kopie der Daten zum Editieren
     };
 
+    // Bearbeitung abbrechen (keine Änderungen übernehmen)
     const cancelEdit = () => {
-        setEditId(null); // Bearbeitung abbrechen
-        setEditData(null);
-    };
-
-    const saveEdit = () => {
-        if (editData) onUpdate(editData); // Änderungen speichern
         setEditId(null);
         setEditData(null);
     };
 
+    // Änderungen übernehmen und Callback ausführen
+    const saveEdit = () => {
+        if (editData) onUpdate(editData);
+        setEditId(null);
+        setEditData(null);
+    };
+
+    // Definition der Spalten für TanStack Table
     const columns: ColumnDef<Product>[] = [
         { accessorKey: "name", header: "Produktname" },
         { accessorKey: "barcode", header: "Barcode" },
         { accessorKey: "description", header: "Beschreibung" },
         { accessorKey: "quantity", header: "Menge" },
 
-        // --- Edit Button ---
+        // ------------------- Edit Button -------------------
         {
             id: "edit",
             header: "",
             cell: ({ row }) =>
+                // Prüfen ob diese Zeile gerade editiert wird
                 editId === row.original.id ? (
                     <div className="flex gap-2" onClick={(e) => e.stopPropagation()}>
                         {/* Speichern */}
                         <button
                             onClick={(e) => {
-                                e.stopPropagation();
+                                e.stopPropagation(); // verhindert Zeilen-Klick
                                 saveEdit();
                             }}
                             className="text-green-600 hover:text-green-800"
@@ -58,7 +69,7 @@ export default function ProductTable({ data, onDelete, onUpdate }: Props) {
                         {/* Abbrechen */}
                         <button
                             onClick={(e) => {
-                                e.stopPropagation();
+                                e.stopPropagation(); // verhindert Zeilen-Klick
                                 cancelEdit();
                             }}
                             className="text-gray-600 hover:text-gray-800"
@@ -67,10 +78,10 @@ export default function ProductTable({ data, onDelete, onUpdate }: Props) {
                         </button>
                     </div>
                 ) : (
-                    // Bearbeiten starten
+                    // Bearbeitung starten
                     <button
                         onClick={(e) => {
-                            e.stopPropagation();
+                            e.stopPropagation(); // verhindert Zeilen-Klick
                             startEdit(row.original);
                         }}
                         className="text-blue-600 hover:text-blue-800"
@@ -80,16 +91,16 @@ export default function ProductTable({ data, onDelete, onUpdate }: Props) {
                 ),
         },
 
-        // --- Delete Button ---
+        // ------------------- Delete Button -------------------
         {
             id: "delete",
             header: "",
             cell: ({ row }) => (
                 <button
                     onClick={(e) => {
-                        e.stopPropagation();
+                        e.stopPropagation(); // verhindert Zeilen-Klick
                         if (confirm("Willst du dieses Produkt wirklich löschen?")) {
-                            onDelete(row.original.id); // Produkt löschen
+                            onDelete(row.original.id);
                         }
                     }}
                     className="text-red-600 hover:text-red-800"
@@ -100,13 +111,14 @@ export default function ProductTable({ data, onDelete, onUpdate }: Props) {
         },
     ];
 
+    // Initialisierung der Tabelle mit TanStack
     const table = useReactTable({
         data,
         columns,
-        state: { sorting }, // Sortierung im State
+        state: { sorting },
         onSortingChange: setSorting, // Sortierung aktualisieren
-        getCoreRowModel: getCoreRowModel(),
-        getSortedRowModel: getSortedRowModel(),
+        getCoreRowModel: getCoreRowModel(), // Basis (ungefilterte) Zeilen
+        getSortedRowModel: getSortedRowModel(), // Sortierte Zeilen
     });
 
     return (
@@ -119,9 +131,11 @@ export default function ProductTable({ data, onDelete, onUpdate }: Props) {
                             <th
                                 key={h.id}
                                 className="py-3 px-4 text-left font-semibold cursor-pointer select-none"
-                                onClick={h.column.getToggleSortingHandler()} // Sortierung toggeln
+                                onClick={h.column.getToggleSortingHandler()} // Klick => Sortierung toggelt
                             >
                                 {flexRender(h.column.columnDef.header, h.getContext())}
+
+                                {/* Sortier-Indikatoren */}
                                 {h.column.getIsSorted() === "asc" && " ↑"}
                                 {h.column.getIsSorted() === "desc" && " ↓"}
                             </th>
@@ -143,23 +157,23 @@ export default function ProductTable({ data, onDelete, onUpdate }: Props) {
                             return (
                                 <td key={cell.id} className="py-2 px-4">
                                     {isEditing && editData && col in editData ? (
-                                        // Eingabefelder im Bearbeitungsmodus
+                                        // Eingabefeld sichtbar, wenn die Zeile im Bearbeitungsmodus ist
                                         <input
                                             className="border p-1 rounded w-full"
                                             value={editData[col] as string | number}
-                                            onClick={(e) => e.stopPropagation()}
+                                            onClick={(e) => e.stopPropagation()} // Kein Trigger der Zeile
                                             onChange={(e) =>
                                                 setEditData({
                                                     ...editData,
                                                     [col]:
                                                         col === "quantity"
-                                                            ? Number(e.target.value)
+                                                            ? Number(e.target.value) // Menge = Zahl
                                                             : e.target.value,
                                                 })
                                             }
                                         />
                                     ) : (
-                                        // Normalanzeige
+                                        // Normaler Zelleninhalt
                                         flexRender(cell.column.columnDef.cell, cell.getContext())
                                     )}
                                 </td>
