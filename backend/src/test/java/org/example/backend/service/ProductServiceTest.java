@@ -5,6 +5,7 @@ import org.example.backend.model.entities.Product;
 import org.example.backend.repository.ProductRepo;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.security.test.context.support.WithMockUser;
 
 import java.util.List;
 import java.util.Optional;
@@ -32,6 +33,7 @@ class ProductServiceTest {
      * über das Repository geladen und zurückgegeben werden.
      */
     @Test
+    @WithMockUser
     void testGetAllProductsById() {
 
         // GIVEN: Zwei Produkte im gleichen Warehouse
@@ -57,6 +59,7 @@ class ProductServiceTest {
      * Testet, dass ein Produkt korrekt per ID gefunden wird.
      */
     @Test
+    @WithMockUser
     void testGetProductById_found() {
 
         // GIVEN: Repository vorbereitet, sodass Produkt existiert
@@ -77,6 +80,7 @@ class ProductServiceTest {
      * wenn Produkt ID nicht existiert.
      */
     @Test
+    @WithMockUser
     void testGetProductById_notFound() {
 
         // GIVEN: Repository liefert Optional.empty()

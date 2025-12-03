@@ -2,46 +2,70 @@ package org.example.backend.utils;
 
 import org.example.backend.model.entities.Product;
 import org.example.backend.model.entities.Warehouse;
-import org.example.backend.repository.ProductRepo;
-import org.example.backend.repository.WarehouseRepo;
+import org.example.backend.service.ProductService;
+import org.example.backend.service.WarehouseService;
 import org.springframework.stereotype.Component;
 
+import jakarta.annotation.PostConstruct;
 import java.util.List;
 
 @Component
 public class GenerateTestData {
-    private final WarehouseRepo warehouseRepo;
-    private final ProductRepo productRepo;
 
-    public GenerateTestData(WarehouseRepo warehouseRepo, ProductRepo productRepo) {
-        this.warehouseRepo = warehouseRepo;
-        this.productRepo = productRepo;
-        saveWarehouseTestData();
-        saveProductTestData();
+    private final WarehouseService warehouseService;
+    private final ProductService productService;
+
+    public GenerateTestData(WarehouseService warehouseService, ProductService productService) {
+        this.warehouseService = warehouseService;
+        this.productService = productService;
     }
 
-    private List<Warehouse> saveWarehouseTestData() {
-        List<Warehouse> listWarehouses = List.of(
-                Warehouse.builder().id("1").name("Nordlager").city("Hamburg").street("Am Sandtrpark").houseNumber("12").zipCode("20457").build(),
-                Warehouse.builder().id("2").name("Zentrallager Ost").city("Berlin").street("Boxhagener Straße").houseNumber("78").zipCode("10245").build(),
-                Warehouse.builder().id("3").name("Südlager").city("München").street("Sesamstraße").houseNumber("145").zipCode("80339").build()
+    //Startet Methode automatisch nach dem Erstellen des Beans.
+    @PostConstruct
+    public void init() {
+        createWarehouses();
+        createProducts();
+    }
+
+    private List<Warehouse> createWarehouses() {
+
+        List<Warehouse> warehouses = List.of(
+                Warehouse.builder().name("Nordlager").city("Hamburg").street("Am Sandtrpark")
+                        .houseNumber("12").zipCode("20457").build(),
+                Warehouse.builder().name("Zentrallager Ost").city("Berlin").street("Boxhagener Straße")
+                        .houseNumber("78").zipCode("10245").build(),
+                Warehouse.builder().name("Südlager").city("München").street("Sesamstraße")
+                        .houseNumber("145").zipCode("80339").build()
         );
-        return warehouseRepo.saveAll(listWarehouses);
+
+        return warehouses.stream()
+                .map(warehouseService::createWarehouse)
+                .toList();
     }
 
 
-    private List<Product> saveProductTestData() {
-        List<Product> listProducts = List.of(
-                Product.builder().id("1").name("Kopfhörer").barcode("421873343001123").description("Over-Ear").quantity(120).warehouseId("1").build(),
-                Product.builder().id("2").name("Fahrrad").barcode("73918420045128").description("Sportgerät").quantity(250).warehouseId("1").build(),
-                Product.builder().id("3").name("Creme").barcode("5908723434349017").description("Gesichtscreme").quantity(180).warehouseId("1").build(),
-                Product.builder().id("4").name("T-Shirt").barcode("8712345678123").description("Baumwolle").quantity(340).warehouseId("2").build(),
-                Product.builder().id("5").name("USB-C Kabel").barcode("400912887645621").description("1m Ladekabel").quantity(500).warehouseId("2").build(),
-                Product.builder().id("6").name("Kopfhörer").barcode("421873443001123").description("Over-Ear").quantity(120).warehouseId("2").build(),
-                Product.builder().id("7").name("Fahrrad").barcode("7391820045128").description("Sportgerät").quantity(250).warehouseId("3").build(),
-                Product.builder().id("8").name("Creme").barcode("590872334359017").description("Gesichtscreme").quantity(180).warehouseId("3").build(),
-                Product.builder().id("9").name("T-Shirt").barcode("8712345678123").description("Baumwolle").quantity(340).warehouseId("1").build()
+    private void createProducts() {
+
+        // Warehouses holen, damit wir deren dynamisch generierte IDs verwenden können
+        List<Warehouse> warehouses = warehouseService.getAllWarehouses();
+        String w1 = warehouses.get(0).id();
+        String w2 = warehouses.get(1).id();
+        String w3 = warehouses.get(2).id();
+
+        List<Product> products = List.of(
+                Product.builder().name("Kopfhörer").description("Over-Ear").quantity(120).warehouseId(w1).build(),
+                Product.builder().name("Fahrrad").description("Sportgerät").quantity(250).warehouseId(w1).build(),
+                Product.builder().name("Creme").description("Gesichtscreme").quantity(180).warehouseId(w1).build(),
+
+                Product.builder().name("T-Shirt").description("Baumwolle").quantity(340).warehouseId(w2).build(),
+                Product.builder().name("USB-C Kabel").description("1m Ladekabel").quantity(500).warehouseId(w2).build(),
+                Product.builder().name("Kopfhörer").description("Over-Ear").quantity(120).warehouseId(w2).build(),
+
+                Product.builder().name("Fahrrad").description("Sportgerät").quantity(250).warehouseId(w3).build(),
+                Product.builder().name("Creme").description("Gesichtscreme").quantity(180).warehouseId(w3).build(),
+                Product.builder().name("T-Shirt").description("Baumwolle").quantity(340).warehouseId(w1).build()
         );
-        return productRepo.saveAll(listProducts);
+
+        products.forEach(productService::createProduct);
     }
 }
